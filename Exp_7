@@ -1,0 +1,124 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+Node* createNode(int value) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = value;
+    newNode->next = newNode; 
+    return newNode;
+}
+
+void addAtStart(Node** head, int value) {
+    Node* newNode = createNode(value);
+    if (*head == NULL) {
+        *head = newNode; 
+    } else {
+        Node* temp = *head;
+        while (temp->next != *head) { 
+            temp = temp->next;
+        }
+        newNode->next = *head; 
+        temp->next = newNode; 
+    }
+    *head = newNode; 
+}
+
+void addAtEnd(Node** head, int value) {
+    Node* newNode = createNode(value);
+    if (*head == NULL) {
+        *head = newNode; 
+    } else {
+        Node* temp = *head;
+        while (temp->next != *head) { 
+            temp = temp->next;
+        }
+        temp->next = newNode; 
+        newNode->next = *head; 
+    }
+}
+
+void removeNode(Node** head, int value) {
+    if (*head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    
+    Node* current = *head;
+    Node* prev = NULL;
+
+    do {
+        if (current->data == value) {
+            if (prev != NULL) {
+                prev->next = current->next; 
+            } else {
+                Node* last = *head;
+                while (last->next != *head) {
+                    last = last->next; 
+                }
+                last->next = current->next; 
+                *head = current->next; 
+            }
+            free(current);
+            printf("Value %d removed from the list.\n", value);
+            return;
+        }
+        prev = current;
+        current = current->next;
+    } while (current != *head);
+    
+    printf("Value %d not found in the list.\n", value);
+}
+
+void traverse(Node* head) {
+    if (head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    Node* current = head;
+    do {
+        printf("%d ", current->data);
+        current = current->next;
+    } while (current != head); 
+    printf("\n");
+}
+
+void freeList(Node* head) {
+    if (head == NULL) return;
+    
+    Node* current = head;
+    Node* nextNode;
+    
+    do {
+        nextNode = current->next;
+        free(current);
+        current = nextNode;
+    } while (current != head);
+}
+
+int main() {
+    Node* head = NULL;
+
+    addAtStart(&head, 30);
+    addAtStart(&head, 20);
+    addAtStart(&head, 10);
+    addAtEnd(&head, 40);
+    addAtEnd(&head, 50);
+
+    printf("Circular Linked List after additions: ");
+    traverse(head); 
+
+    removeNode(&head, 20);
+    printf("Circular Linked List after removing 20: ");
+    traverse(head); 
+
+    removeNode(&head, 100); 
+
+    freeList(head);
+
+    return 0;
+}
