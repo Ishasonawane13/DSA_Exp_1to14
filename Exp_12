@@ -1,0 +1,133 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_WEBSITES 100
+#define URL_LENGTH 100
+
+void addWebsite(char websites[][URL_LENGTH], int *count, const char *url);
+void displayWebsites(char websites[][URL_LENGTH], int count);
+int binarySearch(char websites[][URL_LENGTH], int count, const char *target);
+void deleteWebsite(char websites[][URL_LENGTH], int *count, const char *url);
+void sortWebsites(char websites[][URL_LENGTH], int count);
+
+int main() {
+    char websites[MAX_WEBSITES][URL_LENGTH];
+    int count = 0;
+    int choice;
+    char url[URL_LENGTH];
+    addWebsite(websites, &count , "https://www.google.com");
+    addWebsite(websites, &count , "https://www.youtube.com");
+    addWebsite(websites, &count , "https://www.github.com");
+    addWebsite(websites, &count , "https://www.openai.com");
+    addWebsite(websites, &count , "https://www.netflix.com");
+    addWebsite(websites, &count , "https://www.linkedin.com");
+    
+    do {
+        printf("\nWebsite Search Engine\n");
+        printf("1. Add Website\n");
+        printf("2. Display Websites\n");
+        printf("3. Search Website\n");
+        printf("4. Delete Website\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        getchar(); // To consume newline character
+        
+        switch (choice) {
+            case 1:
+                printf("Enter website URL: ");
+                fgets(url, URL_LENGTH, stdin);
+                url[strcspn(url, "\n")] = 0; // Remove newline character
+                addWebsite(websites, &count, url);
+                break;
+            case 2:
+                displayWebsites(websites, count);
+                break;
+            case 3:
+                printf("Enter website URL to search: ");
+                fgets(url, URL_LENGTH, stdin);
+                url[strcspn(url, "\n")] = 0; 
+                int result = binarySearch(websites, count, url);
+                if (result != -1) {
+                    printf("Website found at index %d: %s\n", result, websites[result]);
+                } else {
+                    printf("Website not found.\n");
+                }
+                break;
+            case 4:
+                printf("Enter website URL to delete: ");
+                fgets(url, URL_LENGTH, stdin);
+                url[strcspn(url, "\n")] = 0; 
+                deleteWebsite(websites, &count, url);
+                break;
+            case 5:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    } while (choice != 5);
+
+    return 0;
+}
+void addWebsite(char websites[][URL_LENGTH], int *count, const char *url) {
+    if (*count < MAX_WEBSITES) {
+        strcpy(websites[*count], url);
+        (*count)++;
+        sortWebsites(websites, *count); 
+    } else {
+        printf("Website list is full!\n");
+    }
+}
+
+void displayWebsites(char websites[][URL_LENGTH], int count) {
+    printf("Websites:\n");
+    for (int i = 0; i < count; i++) {
+        printf("%d: %s\n", i + 1, websites[i]);
+    }
+}
+int binarySearch(char websites[][URL_LENGTH], int count, const char *target) {
+    int low = 0;
+    int high = count - 1;
+
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        int comparison = strcmp(websites[mid], target);
+
+        if (comparison == 0) {
+            return mid; 
+        }
+        if (comparison < 0) {
+            low = mid + 1; 
+        } else {
+            high = mid - 1; 
+        }
+    }
+    return -1; 
+}
+void deleteWebsite(char websites[][URL_LENGTH], int *count, const char *url) {
+    int index = binarySearch(websites, *count, url);
+    if (index != -1) {
+        for (int i = index; i < *count - 1; i++) {
+            strcpy(websites[i], websites[i + 1]); 
+        }
+        (*count)--;
+        printf("Website deleted successfully.\n");
+    } else {
+        printf("Website not found.\n");
+    }
+}
+void sortWebsites(char websites[][URL_LENGTH], int count) {
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            if (strcmp(websites[j], websites[j + 1]) > 0) {
+                char temp[URL_LENGTH];
+                strcpy(temp, websites[j]);
+                strcpy(websites[j], websites[j + 1]);
+                strcpy(websites[j + 1], temp);
+            }
+        }
+    }
+}
+
