@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Job {
+    int jobId;
+    char documentName[100];
+    struct Job* next;
+} Job;
+
+typedef struct PrintQueue {
+    Job* front;
+    Job* rear;
+} PrintQueue;
+
+Job* createJob(int id, const char* name) {
+    Job* newJob = (Job*)malloc(sizeof(Job));
+    newJob->jobId = id;
+    strcpy(newJob->documentName, name);
+    newJob->next = NULL;
+    return newJob;
+}
+
+PrintQueue* createQueue() {
+    PrintQueue* queue = (PrintQueue*)malloc(sizeof(PrintQueue));
+    queue->front = NULL;
+    queue->rear = NULL;
+    return queue;
+}
+
+void enqueue(PrintQueue* queue, int id, const char* name) {
+    Job* newJob = createJob(id, name);
+    if (queue->rear == NULL) {
+        queue->front = queue->rear = newJob;
+        return;
+    }
+    queue->rear->next = newJob;
+    queue->rear = newJob;
+}
+
+Job* dequeue(PrintQueue* queue) {
+    if (queue->front == NULL) {
+        printf("Print queue is empty.\n");
+        return NULL;
+    }
+    Job* temp = queue->front;
+    queue->front = queue->front->next;
+
+    if (queue->front == NULL) {
+        queue->rear = NULL;
+    }
+    return temp;
+}
+
+void displayQueue(PrintQueue* queue) {
+    if (queue->front == NULL) {
+        printf("Print queue is empty.\n");
+        return;
+    }
+    Job* temp = queue->front;
+    printf("Current Print Queue:\n");
+    while (temp != NULL) {
+        printf("Job ID: %d, Document: %s\n", temp->jobId, temp->documentName);
+        temp = temp->next;
+    }
+}
+
+void freeQueue(PrintQueue* queue) {
+    Job* temp;
+    while (queue->front != NULL) {
+        temp = dequeue(queue);
+        free(temp);
+    }
+    free(queue);
+}
+
+int main() {
+    PrintQueue* queue = createQueue();
+    
+    enqueue(queue, 1, "Document1.pdf");
+    enqueue(queue, 2, "Document2.docx");
+    enqueue(queue, 3, "Document3.pptx");
+
+    displayQueue(queue);
+
+    Job* completedJob;
+    completedJob = dequeue(queue);
+    if (completedJob) {
+        printf("Printing Job ID: %d, Document: %s\n", completedJob->jobId, completedJob->documentName);
+        free(completedJob);
+    }
+
+    completedJob = dequeue(queue);
+    if (completedJob) {
+        printf("Printing Job ID: %d, Document: %s\n", completedJob->jobId, completedJob->documentName);
+        free(completedJob);
+    }
+
+    displayQueue(queue);
+
+    freeQueue(queue);
+    return 0;
+}
+
