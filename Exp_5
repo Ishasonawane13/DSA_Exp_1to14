@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h> 
+typedef struct Node{
+    int data;
+    struct Node* next;
+}Node;
+
+Node* createNode (int data , Node* next){
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if(newNode == NULL){
+        perror("Failed to allocate memory");
+        exit(EXIT_FAILURE);
+    }
+    newNode->data = data ;
+    newNode->next = next;
+    return newNode;
+}
+Node* convertArr2LL(int arr[],int size){
+    if (size == 0) return NULL; 
+
+    Node* head = createNode(arr[0],NULL);
+    Node* mover = head;
+    
+    for (int i = 1; i < size; ++i) {
+        Node* temp = createNode(arr[i],NULL);
+        mover->next = temp;
+        mover = temp;
+    }
+
+    return head;
+}
+Node* addNode(int data, int k, Node* head) {
+    if (k < 0) {
+        printf("Position cannot be negative\n");
+        return head;
+    }
+    if (k == 0) {
+        Node* newHead = createNode(data, head);
+        return newHead;
+    }
+    Node* temp = head;
+    Node* nodeAdd = createNode(data, NULL);
+    for (int i = 0; i < k - 1; ++i) {
+        if (temp == NULL) {
+            printf("Position is beyond the end of the list\n");
+            free(nodeAdd); 
+            return head;
+        }
+        temp = temp->next;
+    }
+    if (temp != NULL) {
+        nodeAdd->next = temp->next;
+        temp->next = nodeAdd;
+    } else {
+        printf("Position is beyond the end of the list\n");
+        free(nodeAdd); 
+    }
+    return head;
+}
+Node* addNodeEnd(int data , Node* head){
+    Node* temp = head;
+    while(temp->next != NULL){
+        temp=temp->next;
+    }
+    Node* nodeadd = createNode(data , NULL);
+    temp->next= nodeadd;
+    return head;
+}
+void print(Node* head){
+    Node* temp = head;
+    while(temp != NULL){
+        printf("%d ",temp->data);
+        temp=temp->next;
+    }
+}
+#include <stdio.h>
+
+
+int main() {
+    //singly linked list
+    int arr[8]={2,23,45,36,56,7,8,9};
+    int size = sizeof(arr) / sizeof(arr[0]); 
+    Node* head = convertArr2LL(arr,size);
+    print(head);
+    printf("\n");
+    //Insertion at start
+    head = addNode( 9 , 0 , head );
+    print(head);
+    printf("\n");
+    //Insertion at middle
+    head = addNode( 10 , 6 , head );
+    print(head);
+    printf("\n");
+    //insertion at end
+    head = addNodeEnd( 55 , head );
+    print(head);
+    printf("\n");
+    return 0;
+}
