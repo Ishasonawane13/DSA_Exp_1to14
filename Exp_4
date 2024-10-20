@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <stdbool.h>
+#define MAX 10 
+int front = -1;
+int rear = -1;
+
+bool isEmpty(int cqueue[]){
+    if(rear== front==-1){
+        return true;
+    }else{
+        return false;
+    }
+}
+bool isFull(int cqueue){
+    if(rear==MAX-1){
+        return true;
+    }else{
+        return false;
+    }
+}
+void enqueue(int cqueue[] ,int data){
+    if(rear ==-1 && front == -1){
+        front=0;
+        rear=0;
+        cqueue[rear]=data;
+    }else if((rear+1)%MAX == front ){
+        printf("Queue is FULL");
+    }else{
+        rear=(rear+1)%MAX;
+        cqueue[rear]=data;
+    }
+}
+void dequeue(int cqueue[]){
+    int data;
+    if(front== -1 ){
+        printf("Queue is Empty");
+    }else if(front == rear){
+        printf("%d",cqueue[front]);
+        front=rear=-1;
+    }else{
+        printf("%d",cqueue[front]);
+        front=(front+1)%MAX;
+    }
+}
+
+int getFront(int cqueue[]){
+    if(rear == front == -1){
+        printf("Empty");
+        return -1;
+    }else{
+        return cqueue[front];
+    }
+}
+int getRear(int cqueue[]){
+    if(rear == front == -1){
+        printf("Empty");
+        return -1;
+    }else{
+        return cqueue[rear];
+    }
+}
+int main() {
+    int queue[MAX];
+    int arr[10]={1,2,3,45,44,56,35,33,11,12};
+    for(int i=0 ;i<MAX ;i++){
+        enqueue(queue , arr[i]);
+    }
+    printf("Front element %d",getFront(queue));
+    printf("\nRear element %d\n",getRear(queue));
+    for(int i=0;i<MAX ;i++){
+        dequeue(queue);
+        printf(" ");
+    }
+    enqueue(queue , 50 );
+    printf("\nEnqueued 50:");
+    printf("\nDequeued:" );
+    dequeue(queue);
+    printf("\nFront element %d",getFront(queue));
+    printf("\nRear element %d\n",getRear(queue));
+    printf("\n");
+    dequeue(queue);
+    return 0;
+}
+
