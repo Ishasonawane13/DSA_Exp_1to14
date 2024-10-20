@@ -1,0 +1,143 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node* next;
+    struct Node* prev;
+} Node;
+
+Node* createNode(int value) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = value;
+    newNode->next = NULL;
+    newNode->prev = NULL;
+    return newNode;
+}
+
+void addAtStart(Node** head, int value) {
+    Node* newNode = createNode(value);
+    newNode->next = *head;
+    if (*head != NULL) {
+        (*head)->prev = newNode;
+    }
+    *head = newNode;
+}
+
+void addAtEnd(Node** head, int value) {
+    Node* newNode = createNode(value);
+    if (*head == NULL) {
+        *head = newNode;
+        return;
+    }
+    Node* temp = *head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = newNode;
+    newNode->prev = temp;
+}
+
+void addInMiddle(Node** head, int value, int position) {
+    if (position <= 0) {
+        addAtStart(head, value);
+        return;
+    }
+
+    Node* newNode = createNode(value);
+    Node* temp = *head;
+    for (int i = 0; i < position - 1 && temp != NULL; i++) {
+        temp = temp->next;
+    }
+    if (temp == NULL) {
+        addAtEnd(head, value);
+        return;
+    }
+    newNode->next = temp;
+    newNode->prev = temp->prev;
+    if (temp->prev != NULL) {
+        temp->prev->next = newNode;
+    } else {
+        *head = newNode;
+    }
+    temp->prev = newNode;
+}
+
+void removeNode(Node** head, int value) {
+    Node* temp = *head;
+    while (temp != NULL) {
+        if (temp->data == value) {
+            if (temp->prev != NULL) {
+                temp->prev->next = temp->next;
+            } else {
+                *head = temp->next; 
+            }
+            if (temp->next != NULL) {
+                temp->next->prev = temp->prev;
+            }
+            free(temp);
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("Value %d not found in the list.\n", value);
+}
+
+Node* search(Node* head, int value) {
+    Node* temp = head;
+    while (temp != NULL) {
+        if (temp->data == value) {
+            return temp; 
+        }
+        temp = temp->next;
+    }
+    return NULL; 
+}
+
+void traverse(Node* head) {
+    Node* temp = head;
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+void freeList(Node* head) {
+    Node* temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+int main() {
+    Node* head = NULL;
+    addAtStart(&head, 60);
+    addAtEnd(&head, 27);
+    addAtEnd(&head, 30);
+    addInMiddle(&head, 15, 1); 
+    addAtStart(&head, 14);
+    addAtStart(&head, 13);
+    addInMiddle(&head, 19, 4);
+    addInMiddle(&head, 5, 3); 
+
+    printf("Doubly Linked List after adding elements: ");
+    traverse(head);
+
+    int searchValue = 15;
+    Node* searchResult = search(head, searchValue);
+    if (searchResult != NULL) {
+        printf("Value %d found in the list.\n", searchValue);
+    } else {
+        printf("Value %d not found in the list.\n", searchValue);
+    }
+    removeNode(&head, 13);
+    printf("Doubly Linked List after removing 20: ");
+    traverse(head);
+
+    freeList(head);
+
+    return 0;
+}
