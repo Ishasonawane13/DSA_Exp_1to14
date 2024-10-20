@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+struct Queue {
+    int front;
+    int rear;
+    int size;
+    int* queue;
+};
+
+struct Queue* createQueue(int size) {
+    struct Queue* q = (struct Queue*)malloc(sizeof(struct Queue));
+    q->size = size;
+    q->front = 0;
+    q->rear = -1;
+    q->queue = (int*)malloc(q->size * sizeof(int));
+    return q;
+}
+void enqueue(struct Queue* q, int data) {
+    if (q->rear == q->size - 1) {
+        printf("Queue is full\n");
+        return;
+    }
+    q->queue[++q->rear] = data;
+}
+void dequeue(struct Queue* q) {
+    if (q->front > q->rear) {
+        printf("Queue is empty\n");
+        return;
+    }
+    for (int i = 0; i < q->rear; i++) {
+        q->queue[i] = q->queue[i + 1];
+    }
+    q->rear--;
+}
+
+void display(struct Queue* q) {
+    if (q->front > q->rear) {
+        printf("Queue is Empty\n");
+        return;
+    }
+    for (int i = q->front; i <= q->rear; i++) {
+        printf("%d <-- ", q->queue[i]);
+    }
+    printf("\n");
+}
+void front(struct Queue* q) {
+    if (q->rear == -1) {
+        printf("Queue is Empty\n");
+        return;
+    }
+    printf("Front Element is: %d\n", q->queue[q->front]);
+}
+
+
+int main() {
+    int size;
+    printf("Enter Size of queue : ");
+    scanf("%d",&size);
+    int arr[size];
+    struct Queue* q = createQueue(size);
+    for(int i=0;i<size;i++){
+        printf("Enter %d elemnt : ",i+1);
+        scanf("%d",&arr[i]);
+        enqueue(q,arr[i]);
+    }
+    printf("Queue Elements : \n");
+    // Print queue elements
+    display(q);
+    int num;
+    printf("Enter no. of elements to dequeue :");
+    scanf("%d",&num);
+    for(int i=0;i<num;i++){
+        dequeue(q);
+    }
+    printf("After %d node deletions\n",num);
+    display(q);
+    printf("After one insertion element 60 \n");
+    enqueue(q, 60);
+    display(q);
+    printf("Front element :\n");
+    front(q);
+    free(q->queue);
+    free(q);
+    return 0;
+}
